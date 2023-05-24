@@ -24,4 +24,5 @@ const gameBoard = (() => {
     return {getArray, writeArray, generate};
 })();
 
+gameBoard.writeArray(2, 'X', true);
 gameBoard.generate();
