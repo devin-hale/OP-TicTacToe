@@ -1,0 +1,13 @@
+#gameBoard {
+    border: 1px solid black;
+    max-width: 600px;
+    max-height: 600px;
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(40px, 200px));
+}
+
+.gameBoardDiv {
+    border: 1px solid black;
+    aspect-ratio: 1;
+}
