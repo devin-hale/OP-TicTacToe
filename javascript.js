@@ -1,8 +1,12 @@
 // Gameboard Module
 const gameBoard = (() => {
-    let gameArray = [{value: '', written: false},{value: '', written: false},{value: '', written: false},
-        {value: '', written: false},{value: '', written: false},{value: '', written: false},
-        {value: '', written: false},{value: '', written: false},{value: '', written: false},];
+    let gameArray = [];
+
+    const initializeArray = () => {
+        for (i = 0; i <= 8; i++) {
+            gameArray.push({value: '', written: false, position: i});
+        }
+    }
 
     const getArray = () => gameArray;
 
@@ -21,6 +25,7 @@ const gameBoard = (() => {
             gameSquare.dataset.written = item.written
             gameSquare.innerHTML = item.value;
             gbDiv.appendChild(gameSquare);
+            // Pretty sure this can be changed to send a promise to a cleaner function in a controller module.
             gameSquare.addEventListener('click', a => {
                 if (item.written == true) {
                 } else {
@@ -44,8 +49,11 @@ const gameBoard = (() => {
         })
     }
 
-    return {getArray, writeArray, generate, erase};
+    return {getArray, initializeArray, writeArray, generate, erase};
 })();
 
+
+// Initializing Stuff
+gameBoard.initializeArray();
 gameBoard.generate();
 document.getElementById('resetButton').addEventListener('click', () => gameBoard.erase());
