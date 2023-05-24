@@ -14,10 +14,17 @@ body {
 }
 
 .gameBoardDiv {
+    transition: .25s;
     border: 1px solid black;
     aspect-ratio: 1;
     font-size: calc(15px + 10vw);
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.unwritten:hover {
+    cursor: pointer;
+    transition: .25s;
+    background-color: rgb(179, 179, 179);
 }
