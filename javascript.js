@@ -55,10 +55,24 @@ const gameBoard = (() => {
 
 //Controller Module
 const controller = (() => {
+    const initialize = () => {
+        let controllerDiv = document.getElementById('controller')
+        let playerX = document.createElement('div');
+        playerX.classList = 'player';
+        playerX.id = 'playerX'
+        controllerDiv.appendChild(playerX);
+        let playerO = document.createElement('div');
+        playerO.classList = 'player';
+        playerO.id = 'playerO'
+        controllerDiv.appendChild(playerO);
+        document.getElementById('resetButton').setAttribute('onclick', 'gameBoard.erase()')
 
+    }
+
+    return {initialize}
 })();
 
 
 // Initializing Stuff
 gameBoard.generate();
-document.getElementById('resetButton').addEventListener('click', () => gameBoard.erase());
+controller.initialize();

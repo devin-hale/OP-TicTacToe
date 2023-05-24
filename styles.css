@@ -1,6 +1,7 @@
 
 body {
     text-align: center;
+    position: relative;
 }
 
 #gameBoard {
@@ -27,4 +28,10 @@ body {
     cursor: pointer;
     transition: .25s;
     background-color: rgb(179, 179, 179);
+}
+
+#lol {
+    z-index: 15;
+    position: absolute;
+    background-color: aquamarine;
 }
