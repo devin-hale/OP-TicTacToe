@@ -37,3 +37,10 @@ Gameboard is a module.  It wants to house, change, and display game information.
         to a function within the controller module.  Cleaner.
             
 - Returned function that erases the grid
+
+
+
+
+# Controller Module
+Wants to control the pace of the game.  Start.  Communicate whose turn it is.
+Determine after each move whether a win state as been reached.

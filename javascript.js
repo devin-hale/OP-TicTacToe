@@ -16,6 +16,7 @@ const gameBoard = (() => {
     }
     
     const generate = () => {
+        initializeArray();
         let gbDiv = document.getElementById('gameBoard');
         gameArray.forEach((item) => {
             let gameSquare = document.createElement('div');
@@ -49,11 +50,15 @@ const gameBoard = (() => {
         })
     }
 
-    return {getArray, initializeArray, writeArray, generate, erase};
+    return {getArray, writeArray, generate, erase};
+})();
+
+//Controller Module
+const controller = (() => {
+
 })();
 
 
 // Initializing Stuff
-gameBoard.initializeArray();
 gameBoard.generate();
 document.getElementById('resetButton').addEventListener('click', () => gameBoard.erase());
