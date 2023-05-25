@@ -36,7 +36,7 @@ const gameBoard = (() => {
                     a.target.dataset.written = true
                     a.target.classList.remove('unwritten');
                     gameBoard.writeArray(a.target.id, 'X', true);
-                    controller.winDownChecker(a);
+                    controller.winChecker(a);
                 }
             }) 
         })
@@ -56,36 +56,90 @@ const gameBoard = (() => {
     return {getArray, writeArray, generate, erase};
 })();
 
-//Controller Module
+//Controller Module//
 const controller = (() => {
     const initialize = () => {
         let controllerDiv = document.getElementById('controller')
         let playerX = document.createElement('div');
         playerX.classList = 'player';
         playerX.id = 'playerX'
+        playerX.innerHTML = 'X'
         controllerDiv.appendChild(playerX);
         let playerO = document.createElement('div');
         playerO.classList = 'player';
         playerO.id = 'playerO'
+        playerO.innerHTML = 'O'
         controllerDiv.appendChild(playerO);
         document.getElementById('resetButton').setAttribute('onclick', 'gameBoard.erase()')
 
     }
 
-    const winDownChecker = (a) => {
-        let gameArray = gameBoard.getArray();
-        let targPos = Number(a.target.id)
+    // Vertical Win Checker
+    const verticalWC = (targPos, gameArray) => {
         switch (true) {
-            case targPos < 3:
-                gameArray[Number(a.target.id)+3].value == gameArray[Number(a.target.id)].value && gameArray[Number(a.target.id)+6].value == gameArray[Number(a.target.id)].value ? console.log('Win') : console.log ('No win')
+            case [0,1,2].includes(targPos):
+                gameArray[targPos+3].value == gameArray[targPos].value && gameArray[targPos+6].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                break;
+            case [3,4,5].includes(targPos):
+                gameArray[targPos-3].value == gameArray[targPos].value && gameArray[targPos+3].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                break;
+            case [6,7,8].includes(targPos):
+                gameArray[targPos-3].value == gameArray[targPos].value && gameArray[targPos-6].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                break;
+        };
+    };
+    // Checks for horizontal wins based on checkers
+    const horizontalWC = (targPos, gameArray) => {
+        switch (true) {
+            case [0,3,6].includes(targPos):
+                gameArray[targPos+1].value == gameArray[targPos].value && gameArray[targPos+2].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                break;
+            case [1,4,7].includes(targPos):
+                gameArray[targPos-1].value == gameArray[targPos].value && gameArray[targPos+1].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
                 break;
             case [2,5,8].includes(targPos):
-                console.log('Haha yeah');
+                gameArray[targPos-2].value == gameArray[targPos].value && gameArray[targPos-1].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
                 break;
-        }
+        };
+    };
+    // Checks for Diagonal Wins based on Position
+    const diagWC = (targPos, gameArray) => {
+        switch(true) {
+            case targPos == 0:
+                gameArray[targPos+4].value == gameArray[targPos].value && gameArray[targPos+8].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                break;
+            case targPos == 2:
+                gameArray[targPos+2].value == gameArray[targPos].value && gameArray[targPos+6].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                break;
+            case targPos == 4:
+                if (gameArray[targPos-2].value == gameArray[targPos].value && gameArray[targPos+2].value == gameArray[targPos].value) {
+                    console.log('Win')
+                    break;
+                }
+                if (gameArray[targPos-4].value == gameArray[targPos].value && gameArray[targPos+4].value == gameArray[targPos].value) {
+                    console.log('Win')
+                    break
+                }
+            case targPos == 6:
+                gameArray[targPos-2].value == gameArray[targPos].value && gameArray[targPos-4].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                break;
+            case targPos == 8:
+                gameArray[targPos-4].value == gameArray[targPos].value && gameArray[targPos-8].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                break;
+
+        };
+    };
+
+
+    const winChecker = (a) => {
+        let gameArray = gameBoard.getArray();
+        let targPos = Number(a.target.id)
+        verticalWC(targPos, gameArray);
+        horizontalWC(targPos, gameArray);
+        diagWC(targPos, gameArray);
     }
 
-    return {initialize, winDownChecker}
+    return {initialize, winChecker}
 })();
 
 

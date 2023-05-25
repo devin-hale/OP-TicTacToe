@@ -4,12 +4,16 @@ body {
     position: relative;
 }
 
+p {
+    font-size: calc(20px + 1vw);
+}
+
 #gameBoard {
     border: 1px solid black;
     margin: auto;
     aspect-ratio: 1;
     min-width: 250px;
-    max-width: 75%;
+    max-width: 50%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
 }
@@ -30,8 +34,18 @@ body {
     background-color: rgb(179, 179, 179);
 }
 
-#lol {
-    z-index: 15;
-    position: absolute;
-    background-color: aquamarine;
+#controller {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: 250px;
+    max-width: 60%;
+    margin: auto;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: calc(15px + 3vw)
+}
+
+#resetButton {
+    margin-top: 50px;
 }
