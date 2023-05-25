@@ -29,13 +29,13 @@ const gameBoard = (() => {
             gbDiv.appendChild(gameSquare);
             // Pretty sure this can be changed to send a promise to a cleaner function in a controller module.
             gameSquare.addEventListener('click', a => {
-                if (item.written == true) {
+                if (item.written == true && playerTurn !== playerChoice) {
                 } else {
-                    a.target.innerHTML = 'X'
-                    a.target.dataset.value = 'X'
+                    a.target.innerHTML = playerChoice
+                    a.target.dataset.value = playerChoice
                     a.target.dataset.written = true
                     a.target.classList.remove('unwritten');
-                    gameBoard.writeArray(a.target.id, 'X', true);
+                    gameBoard.writeArray(a.target.id, playerChoice, true);
                     controller.winChecker(a);
                 }
             }) 
@@ -65,6 +65,11 @@ const controller = (() => {
         playerX.id = 'playerX'
         playerX.innerHTML = 'X'
         controllerDiv.appendChild(playerX);
+        let currentPlayer = document.createElement('div');
+        currentPlayer.classList = 'player';
+        currentPlayer.id = 'currentPlayer';
+        currentPlayer.innerHTML = '<';
+        controllerDiv.appendChild(currentPlayer);
         let playerO = document.createElement('div');
         playerO.classList = 'player';
         playerO.id = 'playerO'
@@ -78,13 +83,13 @@ const controller = (() => {
     const verticalWC = (targPos, gameArray) => {
         switch (true) {
             case [0,1,2].includes(targPos):
-                gameArray[targPos+3].value == gameArray[targPos].value && gameArray[targPos+6].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                if (gameArray[targPos+3].value == gameArray[targPos].value && gameArray[targPos+6].value == gameArray[targPos].value) {winReached = true; victor = playerTurn};
                 break;
             case [3,4,5].includes(targPos):
-                gameArray[targPos-3].value == gameArray[targPos].value && gameArray[targPos+3].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                if (gameArray[targPos-3].value == gameArray[targPos].value && gameArray[targPos+3].value == gameArray[targPos].value) {winReached = true; victor = playerTurn};
                 break;
             case [6,7,8].includes(targPos):
-                gameArray[targPos-3].value == gameArray[targPos].value && gameArray[targPos-6].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                if (gameArray[targPos-3].value == gameArray[targPos].value && gameArray[targPos-6].value == gameArray[targPos].value) {winReached = true; victor = playerTurn};
                 break;
         };
     };
@@ -92,13 +97,13 @@ const controller = (() => {
     const horizontalWC = (targPos, gameArray) => {
         switch (true) {
             case [0,3,6].includes(targPos):
-                gameArray[targPos+1].value == gameArray[targPos].value && gameArray[targPos+2].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                if (gameArray[targPos+1].value == gameArray[targPos].value && gameArray[targPos+2].value == gameArray[targPos].value) {winReached = true; victor = playerTurn};
                 break;
             case [1,4,7].includes(targPos):
-                gameArray[targPos-1].value == gameArray[targPos].value && gameArray[targPos+1].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                if (gameArray[targPos-1].value == gameArray[targPos].value && gameArray[targPos+1].value == gameArray[targPos].value) {winReached = true; victor = playerTurn};
                 break;
             case [2,5,8].includes(targPos):
-                gameArray[targPos-2].value == gameArray[targPos].value && gameArray[targPos-1].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                if (gameArray[targPos-2].value == gameArray[targPos].value && gameArray[targPos-1].value == gameArray[targPos].value) {winReached = true; victor = playerTurn};
                 break;
         };
     };
@@ -106,31 +111,33 @@ const controller = (() => {
     const diagWC = (targPos, gameArray) => {
         switch(true) {
             case targPos == 0:
-                gameArray[targPos+4].value == gameArray[targPos].value && gameArray[targPos+8].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                if (gameArray[targPos+4].value == gameArray[targPos].value && gameArray[targPos+8].value == gameArray[targPos].value) {winReached = true; victor = playerTurn};
                 break;
             case targPos == 2:
-                gameArray[targPos+2].value == gameArray[targPos].value && gameArray[targPos+6].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                if (gameArray[targPos+2].value == gameArray[targPos].value && gameArray[targPos+6].value == gameArray[targPos].value) {winReached = true; victor = playerTurn};
                 break;
             case targPos == 4:
                 if (gameArray[targPos-2].value == gameArray[targPos].value && gameArray[targPos+2].value == gameArray[targPos].value) {
-                    console.log('Win')
+                    winReached = true;
+                    victor = playerTurn;
                     break;
                 }
                 if (gameArray[targPos-4].value == gameArray[targPos].value && gameArray[targPos+4].value == gameArray[targPos].value) {
-                    console.log('Win')
+                    winReached = true;
+                    victor = playerTurn;
                     break
                 }
             case targPos == 6:
-                gameArray[targPos-2].value == gameArray[targPos].value && gameArray[targPos-4].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                if (gameArray[targPos-2].value == gameArray[targPos].value && gameArray[targPos-4].value == gameArray[targPos].value) {winReached = true; victor = playerTurn};
                 break;
             case targPos == 8:
-                gameArray[targPos-4].value == gameArray[targPos].value && gameArray[targPos-8].value == gameArray[targPos].value ? console.log('Win') : console.log ('No win');
+                if (gameArray[targPos-4].value == gameArray[targPos].value && gameArray[targPos-8].value == gameArray[targPos].value) {winReached = true; victor = playerTurn};
                 break;
 
         };
     };
 
-
+    //Win Checker.  Combines the three functions above.
     const winChecker = (a) => {
         let gameArray = gameBoard.getArray();
         let targPos = Number(a.target.id)
@@ -139,10 +146,62 @@ const controller = (() => {
         diagWC(targPos, gameArray);
     }
 
-    return {initialize, winChecker}
+    const modal = () => {
+        let modalBKG = document.createElement('div');
+        modalBKG.classList = 'modal'
+        modalBKG.id = 'modal';
+        let modalWindow = document.createElement('div');
+        modalWindow.id = 'modal-window'
+        modalBKG.appendChild(modalWindow);
+        document.body.appendChild(modalBKG);
+        
+    }
+
+    const choosePlayer = () => {
+        modal();
+        let modalBKG = document.getElementById('modal-window');
+        let choosePlayer = document.createElement('div');
+        choosePlayer.classList = 'choiceText';
+        choosePlayer.innerHTML = 'Make Your Choice:';
+        modalBKG.appendChild(choosePlayer);
+        let chooseX = document.createElement('div');
+        chooseX.classList = 'choose';
+        chooseX.id = 'chooseX'
+        chooseX.innerHTML = 'X';
+        modalBKG.appendChild(chooseX);
+        let chooseO = document.createElement('div');
+        chooseO.classList = 'choose';
+        chooseO.innerHTML = 'O';
+        chooseO.id = 'chooseO'
+        modalBKG.appendChild(chooseO);
+
+        document.getElementById('chooseO').addEventListener('click', () => {
+            playerChoice = 'O';
+            player2Choice = 'X';
+            document.getElementById('modal').remove();
+        });
+
+        document.getElementById('chooseX').addEventListener('click', () => {
+            playerChoice = 'X';
+            player2 = 'O';
+            document.getElementById('modal').remove();
+        });
+
+
+    }
+
+
+    return {initialize, winChecker, choosePlayer}
 })();
 
+let playerChoice = '';
+let player2Choice = '';
+let isPlayer2AI;
+let playerTurn = 'X';
+let winReached = false;
+let victor;
 
 // Initializing Stuff
 gameBoard.generate();
 controller.initialize();
+controller.choosePlayer();
