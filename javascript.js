@@ -40,9 +40,11 @@ const gameBoard = (() => {
                     playerTurn = player2Choice
                     if (playerTurn == 'X') {
                         document.getElementById('currentPlayer').innerHTML = "<";
+                        playerAI.takeTurn();
                     }
                     if (playerTurn == 'O') {
                         document.getElementById('currentPlayer').innerHTML = ">";
+                        playerAI.takeTurn();
                     }
                 }
             }) 
@@ -223,7 +225,7 @@ const controller = (() => {
 
         document.getElementById('chooseEasy').addEventListener('click', () => {
             player2Difficulty = 0;
-            document.getElementById('modal').remove();
+            document.getElementById('modal-window').remove();
             controller.choosePlayer();
         });
 
@@ -244,6 +246,134 @@ const controller = (() => {
 
     return {initialize, winChecker, chooseDifficulty, choosePlayer}
 })();
+
+//AI Module
+
+const playerAI = (() => {
+    const takeTurn0 = () => {
+        isWinningMove
+    }
+
+
+
+    const takeTurn2 = () => {
+      const gameArray = gameBoard.getArray();
+  
+      // Find the first available winning move
+      for (let i = 0; i < gameArray.length; i++) {
+        if (!gameArray[i].written) {
+          // Simulate the AI's move
+          gameArray[i].value = player2Choice;
+          gameArray[i].written = true;
+  
+          // Check if the AI wins with this move
+          if (isWinningMove(player2Choice, gameArray)) {
+            // Update the game board and HTML element
+            const gameSquare = document.getElementById(i.toString());
+            gameSquare.innerHTML = player2Choice;
+            gameSquare.dataset.value = player2Choice;
+            gameSquare.dataset.written = true;
+            gameSquare.classList.remove('unwritten');
+  
+            // Check for a win after AI's turn
+            controller.winChecker({ target: gameSquare });
+  
+            // Switch the player turn
+            playerTurn = playerChoice;
+            document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
+  
+            return; // Exit the function
+          }
+  
+          // Reset the simulated move
+          gameArray[i].value = '';
+          gameArray[i].written = false;
+        }
+      }
+  
+      // Find the first available blocking move
+      for (let i = 0; i < gameArray.length; i++) {
+        if (!gameArray[i].written) {
+          // Simulate the human player's move
+          gameArray[i].value = playerChoice;
+          gameArray[i].written = true;
+  
+          // Check if the human player wins with this move
+          if (isWinningMove(playerChoice, gameArray)) {
+            // Block the human player's winning move
+            gameArray[i].value = player2Choice;
+            gameArray[i].written = true;
+  
+            // Update the game board and HTML element
+            const gameSquare = document.getElementById(i.toString());
+            gameSquare.innerHTML = player2Choice;
+            gameSquare.dataset.value = player2Choice;
+            gameSquare.dataset.written = true;
+            gameSquare.classList.remove('unwritten');
+  
+            // Check for a win after AI's turn
+            controller.winChecker({ target: gameSquare });
+  
+            // Switch the player turn
+            playerTurn = playerChoice;
+            document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
+  
+            return; // Exit the function
+          }
+  
+          // Reset the simulated move
+          gameArray[i].value = '';
+          gameArray[i].written = false;
+        }
+      }
+  
+      // Choose a random available move if no winning or blocking moves found
+      const availableMoves = gameArray.filter(square => !square.written);
+      const randomIndex = Math.floor(Math.random() * availableMoves.length);
+      const randomMove = availableMoves[randomIndex];
+  
+      // Update the game board and HTML element with the random move
+      randomMove.value = player2Choice;
+      randomMove.written = true;
+  
+      const randomSquare = document.getElementById(randomMove.position.toString());
+      randomSquare.innerHTML = player2Choice;
+      randomSquare.dataset.value = player2Choice;
+      randomSquare.dataset.written = true;
+      randomSquare.classList.remove('unwritten');
+  
+      // Check for a win after AI's turn
+      controller.winChecker({ target: randomSquare });
+  
+      // Switch the player turn
+      playerTurn = playerChoice;
+      document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
+    };
+  
+    // Function to check if a given move results in a win
+    const isWinningMove = (player, array) => {
+      const winningCombinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+        [0, 4, 8], [2, 4, 6] // Diagonals
+      ];
+  
+      for (const combination of winningCombinations) {
+        const [a, b, c] = combination;
+        if (
+          array[a].value === player &&
+          array[b].value === player &&
+          array[c].value === player
+        ) {
+          return true;
+        }
+      }
+  
+      return false;
+    };
+  
+    return { takeTurn2 };
+  })();
 
 let playerChoice = '';
 let player2Choice = '';
