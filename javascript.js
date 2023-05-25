@@ -27,7 +27,7 @@ const gameBoard = (() => {
             gameSquare.dataset.written = item.written
             gameSquare.innerHTML = item.value;
             gbDiv.appendChild(gameSquare);
-            // Pretty sure this can be changed to send a promise to a cleaner function in a controller module.
+            // On click
             gameSquare.addEventListener('click', a => {
                 if (item.written == true) {
                 } else if(playerChoice === playerTurn){
@@ -38,8 +38,12 @@ const gameBoard = (() => {
                     gameBoard.writeArray(a.target.id, playerChoice, true);
                     controller.winChecker(a);
                     playerTurn = player2Choice
-                    console.log(playerTurn)
-                    console.log(player2Choice)
+                    if (playerTurn == 'X') {
+                        document.getElementById('currentPlayer').innerHTML = "<";
+                    }
+                    if (playerTurn == 'O') {
+                        document.getElementById('currentPlayer').innerHTML = ">";
+                    }
                 }
             }) 
         })
@@ -153,30 +157,28 @@ const controller = (() => {
         let modalBKG = document.createElement('div');
         modalBKG.classList = 'modal'
         modalBKG.id = 'modal';
-        let modalWindow = document.createElement('div');
-        modalWindow.id = 'modal-window'
-        modalBKG.appendChild(modalWindow);
-        document.body.appendChild(modalBKG);
-        
+        document.body.appendChild(modalBKG)
     }
 
     const choosePlayer = () => {
-        modal();
-        let modalBKG = document.getElementById('modal-window');
+        let modalWindow = document.createElement('modal-window');
+        let modalBKG = document.getElementById('modal');
+        modalWindow.id = 'modal-window'
+        modalBKG.appendChild(modalWindow);
         let choosePlayer = document.createElement('div');
         choosePlayer.classList = 'choiceText';
         choosePlayer.innerHTML = 'Make Your Choice:';
-        modalBKG.appendChild(choosePlayer);
+        modalWindow.appendChild(choosePlayer);
         let chooseX = document.createElement('div');
         chooseX.classList = 'choose';
         chooseX.id = 'chooseX'
         chooseX.innerHTML = 'X';
-        modalBKG.appendChild(chooseX);
+        modalWindow.appendChild(chooseX);
         let chooseO = document.createElement('div');
         chooseO.classList = 'choose';
         chooseO.innerHTML = 'O';
         chooseO.id = 'chooseO'
-        modalBKG.appendChild(chooseO);
+        modalWindow.appendChild(chooseO);
 
         document.getElementById('chooseO').addEventListener('click', () => {
             playerChoice = 'O';
@@ -193,12 +195,59 @@ const controller = (() => {
 
     }
 
+    const chooseDifficulty = () => {
+        modal();
+        let modalWindow = document.createElement('modal-window');
+        let modalBKG = document.getElementById('modal');
+        modalWindow.id = 'modal-window'
+        modalBKG.appendChild(modalWindow);
+        let choosePlayer = document.createElement('div');
+        choosePlayer.classList = 'choiceText';
+        choosePlayer.innerHTML = 'Difficulty:';
+        modalWindow.appendChild(choosePlayer);
+        let chooseX = document.createElement('div');
+        chooseX.classList = 'choose';
+        chooseX.id = 'chooseEasy'
+        chooseX.innerHTML = 'Easy';
+        modalWindow.appendChild(chooseX);
+        let chooseO = document.createElement('div');
+        chooseO.classList = 'choose';
+        chooseO.innerHTML = 'Hard';
+        chooseO.id = 'chooseHard'
+        modalWindow.appendChild(chooseO);
+        let chooseImp = document.createElement('div');
+        chooseImp.classList = 'choose';
+        chooseImp.innerHTML = 'Impossible';
+        chooseImp.id = 'chooseImp'
+        modalWindow.appendChild(chooseImp);
 
-    return {initialize, winChecker, choosePlayer}
+        document.getElementById('chooseEasy').addEventListener('click', () => {
+            player2Difficulty = 0;
+            document.getElementById('modal').remove();
+            controller.choosePlayer();
+        });
+
+        document.getElementById('chooseHard').addEventListener('click', () => {
+            player2Difficulty = 1;
+            document.getElementById('modal-window').remove();
+            controller.choosePlayer();
+        });
+
+
+        document.getElementById('chooseImp').addEventListener('click', () => {
+            player2Difficulty = 2;
+            document.getElementById('modal-window').remove();
+            controller.choosePlayer();
+        });
+    }
+
+
+    return {initialize, winChecker, chooseDifficulty, choosePlayer}
 })();
 
 let playerChoice = '';
 let player2Choice = '';
+let player2Difficulty;
 let playerTurn = 'X';
 let winReached = false;
 let victor;
@@ -206,4 +255,4 @@ let victor;
 // Initializing Stuff
 gameBoard.generate();
 controller.initialize();
-controller.choosePlayer();
+controller.chooseDifficulty();

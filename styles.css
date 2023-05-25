@@ -87,7 +87,13 @@ p {
     padding: 20px;
 }
 
+#chooseImp {
+    grid-column: span 2;
+    margin: 20px;
+}
+
 .choose {
+    text-align: center;
     font-size: calc(20px + 2vw);
     border-radius: 5px;
     padding: 5px;
