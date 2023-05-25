@@ -18,10 +18,11 @@ const gameBoard = (() => {
     const generate = () => {
         initializeArray();
         let gbDiv = document.getElementById('gameBoard');
-        gameArray.forEach((item) => {
+        gameArray.forEach((item, index) => {
             let gameSquare = document.createElement('div');
             gameSquare.classList.add('gameBoardDiv');
             gameSquare.classList.add('unwritten')
+            gameSquare.id = index
             gameSquare.dataset.value = item.value
             gameSquare.dataset.written = item.written
             gameSquare.innerHTML = item.value;
@@ -34,6 +35,8 @@ const gameBoard = (() => {
                     a.target.dataset.value = 'X'
                     a.target.dataset.written = true
                     a.target.classList.remove('unwritten');
+                    gameBoard.writeArray(a.target.id, 'X', true);
+                    controller.winDownChecker(a);
                 }
             }) 
         })
@@ -69,7 +72,20 @@ const controller = (() => {
 
     }
 
-    return {initialize}
+    const winDownChecker = (a) => {
+        let gameArray = gameBoard.getArray();
+        let targPos = Number(a.target.id)
+        switch (true) {
+            case targPos < 3:
+                gameArray[Number(a.target.id)+3].value == gameArray[Number(a.target.id)].value && gameArray[Number(a.target.id)+6].value == gameArray[Number(a.target.id)].value ? console.log('Win') : console.log ('No win')
+                break;
+            case [2,5,8].includes(targPos):
+                console.log('Haha yeah');
+                break;
+        }
+    }
+
+    return {initialize, winDownChecker}
 })();
 
 
