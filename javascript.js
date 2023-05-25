@@ -29,14 +29,17 @@ const gameBoard = (() => {
             gbDiv.appendChild(gameSquare);
             // Pretty sure this can be changed to send a promise to a cleaner function in a controller module.
             gameSquare.addEventListener('click', a => {
-                if (item.written == true && playerTurn !== playerChoice) {
-                } else {
+                if (item.written == true) {
+                } else if(playerChoice === playerTurn){
                     a.target.innerHTML = playerChoice
                     a.target.dataset.value = playerChoice
                     a.target.dataset.written = true
                     a.target.classList.remove('unwritten');
                     gameBoard.writeArray(a.target.id, playerChoice, true);
                     controller.winChecker(a);
+                    playerTurn = player2Choice
+                    console.log(playerTurn)
+                    console.log(player2Choice)
                 }
             }) 
         })
@@ -183,7 +186,7 @@ const controller = (() => {
 
         document.getElementById('chooseX').addEventListener('click', () => {
             playerChoice = 'X';
-            player2 = 'O';
+            player2Choice = 'O';
             document.getElementById('modal').remove();
         });
 
@@ -196,7 +199,6 @@ const controller = (() => {
 
 let playerChoice = '';
 let player2Choice = '';
-let isPlayer2AI;
 let playerTurn = 'X';
 let winReached = false;
 let victor;
