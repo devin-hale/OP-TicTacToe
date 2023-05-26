@@ -30,7 +30,7 @@ const gameBoard = (() => {
             // On click
             gameSquare.addEventListener('click', a => {
                 if (item.written == true) {
-                } else if(playerChoice === playerTurn){
+                } else if(playerChoice === playerTurn && versusAI){
                     a.target.innerHTML = playerChoice
                     a.target.dataset.value = playerChoice
                     a.target.dataset.written = true
@@ -53,6 +53,29 @@ const gameBoard = (() => {
                         document.getElementById('playerO').classList.add('currentTurn');
                         document.getElementById('playerX').classList.remove('currentTurn');
                         playerAI.takeTurn();
+                    }
+                } else if (!versusAI) {
+                    console.log('PvP')
+                    a.target.innerHTML = playerTurn;
+                    a.target.dataset.value = playerTurn
+                    a.target.dataset.written = true
+                    a.target.classList.remove('unwritten');
+                    gameBoard.writeArray(a.target.id, playerTurn, true);
+                    controller.winChecker(a);
+                    if (winReached || drawReached) {
+                        controller.winnerDetermined();
+                        return;
+                    };
+                    playerTurn == playerChoice ? playerTurn = player2Choice : playerTurn = playerChoice;
+                    if (playerTurn == 'X') {
+                        document.getElementById('currentPlayer').innerHTML = "<";
+                        document.getElementById('playerX').classList.add('currentTurn');
+                        document.getElementById('playerO').classList.remove('currentTurn');
+                    }
+                    if (playerTurn == 'O') {
+                        document.getElementById('currentPlayer').innerHTML = ">";
+                        document.getElementById('playerO').classList.add('currentTurn');
+                        document.getElementById('playerX').classList.remove('currentTurn');
                     }
                 }
             }) 
@@ -107,7 +130,7 @@ const controller = (() => {
             victor = '';
             document.getElementById('playerO').classList.remove('currentTurn');
             document.getElementById('playerX').classList.remove('currentTurn');
-            controller.chooseDifficulty();
+            controller.chooseMode();
 
         })
 
@@ -237,7 +260,6 @@ const controller = (() => {
     }
 
     const chooseDifficulty = () => {
-        modal();
         let modalWindow = document.createElement('modal-window');
         let modalBKG = document.getElementById('modal');
         modalWindow.id = 'modal-window'
@@ -285,6 +307,47 @@ const controller = (() => {
         });
     }
 
+    const chooseMode = () => {
+        modal();
+        let modalWindow = document.createElement('modal-window');
+        let modalBKG = document.getElementById('modal');
+        modalWindow.id = 'modal-window'
+        modalBKG.appendChild(modalWindow);
+        let choosePlayer = document.createElement('div');
+        choosePlayer.classList = 'choiceText';
+        choosePlayer.innerHTML = 'Mode:';
+        modalWindow.appendChild(choosePlayer);
+        let chooseX = document.createElement('div');
+        chooseX.classList = 'choose';
+        chooseX.id = 'chooseEasy'
+        chooseX.innerHTML = 'Versus AI';
+        modalWindow.appendChild(chooseX);
+        let chooseO = document.createElement('div');
+        chooseO.classList = 'choose';
+        chooseO.innerHTML = 'Versus Player';
+        chooseO.id = 'chooseHard'
+        modalWindow.appendChild(chooseO);
+
+        document.getElementById('chooseEasy').addEventListener('click', () => {
+            versusAI = true;
+            document.getElementById('modal-window').remove();
+            chooseDifficulty();
+        });
+
+        document.getElementById('chooseHard').addEventListener('click', () => {
+            versusAI = false;
+            document.getElementById('modal').remove();
+            document.getElementById('difficultyText').innerHTML = 'Multiplayer'
+            document.getElementById('playerX').classList.add('currentTurn');
+            playerTurn = 'X'
+            playerChoice = 'X';
+            player2Choice = 'O';
+        });
+
+
+    }
+
+
     const winnerDetermined = () => {
         modal();
         let modalWindow = document.createElement('modal-window');
@@ -316,6 +379,7 @@ const controller = (() => {
         document.getElementById('playAgain').addEventListener('click', a => {
             gameBoard.erase();
             document.getElementById('modal').remove();
+            document.getElementById('difficultyText').innerHTML = '';
             playerChoice = '';
             player2Choice = '';
             player2Difficulty = 0;
@@ -325,14 +389,14 @@ const controller = (() => {
             victor = '';
             document.getElementById('playerO').classList.remove('currentTurn');
             document.getElementById('playerX').classList.remove('currentTurn');
-            controller.chooseDifficulty();
+            controller.chooseMode();
 
         })
 
     }
 
 
-    return {initialize, winChecker, chooseDifficulty, choosePlayer, winnerDetermined}
+    return {initialize, winChecker, chooseDifficulty, choosePlayer, winnerDetermined, chooseMode}
 })();
 
 //AI Module
@@ -624,8 +688,9 @@ let winReached = false;
 let drawReached = false;
 let victor;
 let resetting = false;
+let versusAI;
 
 // Initializing Stuff
 gameBoard.generate();
 controller.initialize();
-controller.chooseDifficulty();
+controller.chooseMode();
