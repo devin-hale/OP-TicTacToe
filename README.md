@@ -44,3 +44,5 @@ Gameboard is a module.  It wants to house, change, and display game information.
 # Controller Module
 Wants to control the pace of the game.  Start.  Communicate whose turn it is.
 Determine after each move whether a win state as been reached.
+
+# I kind of started coding here, and finished without planning. :^)  I'll do better next time.
