@@ -37,13 +37,21 @@ const gameBoard = (() => {
                     a.target.classList.remove('unwritten');
                     gameBoard.writeArray(a.target.id, playerChoice, true);
                     controller.winChecker(a);
+                    if (winReached || drawReached) {
+                        controller.winnerDetermined();
+                        return;
+                    };
                     playerTurn = player2Choice
                     if (playerTurn == 'X') {
                         document.getElementById('currentPlayer').innerHTML = "<";
+                        document.getElementById('playerX').classList.remove('currentTurn');
+                        document.getElementById('playerO').classList.add('currentTurn');
                         playerAI.takeTurn();
                     }
                     if (playerTurn == 'O') {
                         document.getElementById('currentPlayer').innerHTML = ">";
+                        document.getElementById('playerO').classList.remove('currentTurn');
+                        document.getElementById('playerX').classList.add('currentTurn');
                         playerAI.takeTurn();
                     }
                 }
@@ -153,6 +161,14 @@ const controller = (() => {
         verticalWC(targPos, gameArray);
         horizontalWC(targPos, gameArray);
         diagWC(targPos, gameArray);
+        if (!winReached) {
+            let movesLeft = gameArray.filter(a => a.written == false)
+            if (movesLeft.length == 0) {
+                drawReached = true;
+                winReached = true;
+            };
+        }
+
     }
 
     const modal = () => {
@@ -243,21 +259,155 @@ const controller = (() => {
         });
     }
 
+    const winnerDetermined = () => {
+        modal();
+        let modalWindow = document.createElement('modal-window');
+        let modalBKG = document.getElementById('modal');
+        modalWindow.id = 'winner-window'
+        modalBKG.appendChild(modalWindow);
+        let winnerMessage = document.createElement('div');
+        winnerMessage.classList = 'choiceText';
+        // If draw, print draw, if not, print winner.
+        if (drawReached) {
+            winnerMessage.innerHTML = 'DRAW';
+            modalWindow.appendChild(winnerMessage);
+        }
+        else {
+            winnerMessage.innerHTML = 'WINNER:';
+            modalWindow.appendChild(winnerMessage);
+            let victorInd = document.createElement('div');
+            victorInd.classList = 'choiceText';
+            victorInd.innerHTML = `${victor}`;
+            modalWindow.appendChild(victorInd);
+        }
 
-    return {initialize, winChecker, chooseDifficulty, choosePlayer}
+        let playAgain = document.createElement('button');
+        playAgain.type = 'button';
+        playAgain.id = 'playAgain';
+        playAgain.innerHTML = 'Play Again'
+        modalWindow.appendChild(playAgain);
+
+        document.getElementById('playAgain').addEventListener('click', a => {
+            gameBoard.erase();
+            document.getElementById('modal').remove();
+            playerChoice = '';
+            player2Choice = '';
+            player2Difficulty = 0;
+            playerTurn = 'X';
+            winReached = false;
+            drawReached = false;
+            victor = '';
+            controller.chooseDifficulty();
+
+        })
+
+    }
+
+
+    return {initialize, winChecker, chooseDifficulty, choosePlayer, winnerDetermined}
 })();
 
 //AI Module
 
 const playerAI = (() => {
-    const takeTurn0 = () => {
-        isWinningMove
-    }
+    const gameArray = gameBoard.getArray();
+    
+    // Easy AI.  Finds list of legal moves, and takes a random one.
+    const difficulty0 = () => {
 
 
+        // Gets list of legal moves.
+        let legalMove = gameArray.filter(square => !square.written)
+        let chosenMove = legalMove[Math.floor(Math.random()*legalMove.length)].position;
 
-    const takeTurn2 = () => {
-      const gameArray = gameBoard.getArray();
+        // Writes move to game array
+        gameArray[chosenMove].value = player2Choice;
+        gameArray[chosenMove].written = true;
+
+        // Renders move on HTML
+        const randomSquare = document.getElementById(chosenMove.toString())
+        randomSquare.dataset.value = player2Choice
+        randomSquare.dataset.written = true;
+        randomSquare.innerHTML = `${player2Choice}`;
+
+        // Checks for Win
+        controller.winChecker({ target: randomSquare });
+        if (winReached || drawReached) {
+            controller.winnerDetermined();
+            return;
+        };
+        
+
+        // Switch the player turn
+        if (playerTurn == 'X') {
+            document.getElementById('playerX').classList.remove('currentTurn');
+            document.getElementById('playerO').classList.add('currentTurn');
+        }
+        if (playerTurn == 'O') {
+            document.getElementById('playerO').classList.remove('currentTurn');
+            document.getElementById('playerX').classList.add('currentTurn');
+        }
+        playerTurn = playerChoice;
+        document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
+
+
+        };
+
+    // Hard AI.  Finds list of legal moves, prioritizes winning ones.  If none found, use a random move.  Doesn't block.
+    const difficulty1 = () => {
+
+       // Find the first available winning move
+      for (let i = 0; i < gameArray.length; i++) {
+        if (!gameArray[i].written) {
+          // Simulate the AI's move
+          gameArray[i].value = player2Choice;
+          gameArray[i].written = true;
+  
+          // Check if the AI wins with this move
+          if (isWinningMove(player2Choice, gameArray)) {
+            // Update the game board and HTML element
+            const gameSquare = document.getElementById(i.toString());
+            gameSquare.innerHTML = player2Choice;
+            gameSquare.dataset.value = player2Choice;
+            gameSquare.dataset.written = true;
+            gameSquare.classList.remove('unwritten');
+  
+            // Check for a win after AI's turn
+            controller.winChecker({ target: gameSquare });
+            if (winReached || drawReached) {
+                controller.winnerDetermined();
+                return;
+            };
+  
+            // Switch the player turn
+            if (playerTurn == 'X') {
+                document.getElementById('playerX').classList.remove('currentTurn');
+                document.getElementById('playerO').classList.add('currentTurn');
+            }
+            if (playerTurn == 'O') {
+                document.getElementById('playerO').classList.remove('currentTurn');
+                document.getElementById('playerX').classList.add('currentTurn');
+            }
+
+            playerTurn = playerChoice;
+            document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
+  
+            return; // Exit the function
+          }
+  
+          // Reset the simulated move
+          gameArray[i].value = '';
+          gameArray[i].written = false;
+        }
+      }
+
+      //If none are found, take a random legal move.
+      difficulty0();
+    
+    };
+
+    //Impossible.  This was generated by ChatGPT after feeding it my HTML and JS file.  Worked perfectly on the first try.
+    const difficulty2 = () => {
   
       // Find the first available winning move
       for (let i = 0; i < gameArray.length; i++) {
@@ -277,10 +427,24 @@ const playerAI = (() => {
   
             // Check for a win after AI's turn
             controller.winChecker({ target: gameSquare });
+            if (winReached || drawReached) {
+                controller.winnerDetermined();
+                return;
+            };
   
             // Switch the player turn
+            if (playerTurn == 'X') {
+                document.getElementById('playerX').classList.remove('currentTurn');
+                document.getElementById('playerO').classList.add('currentTurn');
+            }
+            if (playerTurn == 'O') {
+                document.getElementById('playerO').classList.remove('currentTurn');
+                document.getElementById('playerX').classList.add('currentTurn');
+            }
+
             playerTurn = playerChoice;
             document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
+
   
             return; // Exit the function
           }
@@ -313,10 +477,23 @@ const playerAI = (() => {
   
             // Check for a win after AI's turn
             controller.winChecker({ target: gameSquare });
+            if (winReached || drawReached) {
+                controller.winnerDetermined();
+                return;
+            };
   
             // Switch the player turn
             playerTurn = playerChoice;
             document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
+
+            if (playerTurn == 'X') {
+                document.getElementById('playerX').classList.remove('currentTurn');
+                document.getElementById('playerO').classList.add('currentTurn');
+            }
+            if (playerTurn == 'O') {
+                document.getElementById('playerO').classList.remove('currentTurn');
+                document.getElementById('playerX').classList.add('currentTurn');
+            }
   
             return; // Exit the function
           }
@@ -344,11 +521,38 @@ const playerAI = (() => {
   
       // Check for a win after AI's turn
       controller.winChecker({ target: randomSquare });
+      if (winReached || drawReached) {
+        controller.winnerDetermined();
+        return;
+         };
   
       // Switch the player turn
       playerTurn = playerChoice;
       document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
+
+      if (playerTurn == 'X') {
+        document.getElementById('playerX').classList.remove('currentTurn');
+        document.getElementById('playerO').classList.add('currentTurn');
+        }
+      if (playerTurn == 'O') {
+            document.getElementById('playerO').classList.remove('currentTurn');
+            document.getElementById('playerX').classList.add('currentTurn');
+        }
     };
+
+    const takeTurn = () => {
+        switch (true) {
+            case player2Difficulty === 0:
+                difficulty0();
+                break;
+            case player2Difficulty === 1:
+                difficulty1();
+                break;
+            case player2Difficulty === 2:
+                difficulty2();
+                break;
+        }
+    }
   
     // Function to check if a given move results in a win
     const isWinningMove = (player, array) => {
@@ -372,7 +576,7 @@ const playerAI = (() => {
       return false;
     };
   
-    return { takeTurn2 };
+    return { takeTurn };
   })();
 
 let playerChoice = '';
@@ -380,6 +584,7 @@ let player2Choice = '';
 let player2Difficulty;
 let playerTurn = 'X';
 let winReached = false;
+let drawReached = false;
 let victor;
 
 // Initializing Stuff
