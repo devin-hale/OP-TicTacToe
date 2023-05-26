@@ -62,11 +62,15 @@ const gameBoard = (() => {
     const erase = () => {
         Array.from(document.getElementById('gameBoard').children).forEach( (item, index) => {
             item.dataset.value = '';
-            gameArray[index].value = '';
             item.dataset.written = false;
-            gameArray[index].written = false;
             item.classList.add('unwritten');
             item.innerHTML = '';
+        })
+
+        let gameArray = gameBoard.getArray();
+        gameArray.forEach(item => {
+            item.value = '';
+            item.written = false;
         })
     }
 
@@ -94,13 +98,12 @@ const controller = (() => {
         controllerDiv.appendChild(playerO);
         document.getElementById('resetButton').addEventListener('click', a => {
             gameBoard.erase();
+            resetting = true;
             document.getElementById('difficultyText').innerHTML = '';
             playerChoice = '';
             player2Choice = '';
             player2Difficulty = 0;
             playerTurn = 'X';
-            winReached = false;
-            drawReached = false;
             victor = '';
             document.getElementById('playerO').classList.remove('currentTurn');
             document.getElementById('playerX').classList.remove('currentTurn');
@@ -177,7 +180,7 @@ const controller = (() => {
         diagWC(targPos, gameArray);
         if (!winReached) {
             let movesLeft = gameArray.filter(a => a.written == false)
-            if (movesLeft.length > 0) {
+            if (movesLeft.length === 0) {
                 drawReached = true;
                 winReached = true;
             };
@@ -213,6 +216,7 @@ const controller = (() => {
         modalWindow.appendChild(chooseO);
 
         document.getElementById('chooseO').addEventListener('click', () => {
+            resetting = false;
             playerChoice = 'O';
             player2Choice = 'X';
             document.getElementById('modal').remove();
@@ -221,6 +225,7 @@ const controller = (() => {
         });
 
         document.getElementById('chooseX').addEventListener('click', () => {
+            resetting = false;
             playerChoice = 'X';
             player2Choice = 'O';
             document.getElementById('modal').remove();
@@ -563,17 +568,24 @@ const playerAI = (() => {
 
     const takeTurn = () => {
         setTimeout(
-            () => {switch (true) {
-                case player2Difficulty === 0:
-                    difficulty0();
-                    break;
-                case player2Difficulty === 1:
-                    difficulty1();
-                    break;
-                case player2Difficulty === 2:
-                    difficulty2();
-                    break;
-            }},
+            () => {
+                if (resetting) {
+                
+                } else {
+                    switch (true) {
+                    case player2Difficulty === 0:
+                        difficulty0();
+                        break;
+                    case player2Difficulty === 1:
+                        difficulty1();
+                        break;
+                    case player2Difficulty === 2:
+                        difficulty2();
+                        break;
+                    }
+                }
+            },
+
             1000
         )
 
@@ -611,6 +623,7 @@ let playerTurn = 'X';
 let winReached = false;
 let drawReached = false;
 let victor;
+let resetting = false;
 
 // Initializing Stuff
 gameBoard.generate();
