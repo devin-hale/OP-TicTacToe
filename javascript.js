@@ -44,14 +44,14 @@ const gameBoard = (() => {
                     playerTurn = player2Choice
                     if (playerTurn == 'X') {
                         document.getElementById('currentPlayer').innerHTML = "<";
-                        document.getElementById('playerX').classList.remove('currentTurn');
-                        document.getElementById('playerO').classList.add('currentTurn');
+                        document.getElementById('playerX').classList.add('currentTurn');
+                        document.getElementById('playerO').classList.remove('currentTurn');
                         playerAI.takeTurn();
                     }
                     if (playerTurn == 'O') {
                         document.getElementById('currentPlayer').innerHTML = ">";
-                        document.getElementById('playerO').classList.remove('currentTurn');
-                        document.getElementById('playerX').classList.add('currentTurn');
+                        document.getElementById('playerO').classList.add('currentTurn');
+                        document.getElementById('playerX').classList.remove('currentTurn');
                         playerAI.takeTurn();
                     }
                 }
@@ -92,7 +92,21 @@ const controller = (() => {
         playerO.id = 'playerO'
         playerO.innerHTML = 'O'
         controllerDiv.appendChild(playerO);
-        document.getElementById('resetButton').setAttribute('onclick', 'gameBoard.erase()')
+        document.getElementById('resetButton').addEventListener('click', a => {
+            gameBoard.erase();
+            document.getElementById('difficultyText').innerHTML = '';
+            playerChoice = '';
+            player2Choice = '';
+            player2Difficulty = 0;
+            playerTurn = 'X';
+            winReached = false;
+            drawReached = false;
+            victor = '';
+            document.getElementById('playerO').classList.remove('currentTurn');
+            document.getElementById('playerX').classList.remove('currentTurn');
+            controller.chooseDifficulty();
+
+        })
 
     }
 
@@ -163,7 +177,7 @@ const controller = (() => {
         diagWC(targPos, gameArray);
         if (!winReached) {
             let movesLeft = gameArray.filter(a => a.written == false)
-            if (movesLeft.length == 0) {
+            if (movesLeft.length > 0) {
                 drawReached = true;
                 winReached = true;
             };
@@ -202,6 +216,7 @@ const controller = (() => {
             playerChoice = 'O';
             player2Choice = 'X';
             document.getElementById('modal').remove();
+            document.getElementById('playerX').classList.add('currentTurn');
             playerAI.takeTurn();
         });
 
@@ -209,6 +224,7 @@ const controller = (() => {
             playerChoice = 'X';
             player2Choice = 'O';
             document.getElementById('modal').remove();
+            document.getElementById('playerX').classList.add('currentTurn');
 
         });
 
@@ -244,12 +260,14 @@ const controller = (() => {
         document.getElementById('chooseEasy').addEventListener('click', () => {
             player2Difficulty = 0;
             document.getElementById('modal-window').remove();
+            document.getElementById('difficultyText').innerHTML = 'Easy Mode'
             controller.choosePlayer();
         });
 
         document.getElementById('chooseHard').addEventListener('click', () => {
             player2Difficulty = 1;
             document.getElementById('modal-window').remove();
+            document.getElementById('difficultyText').innerHTML = 'Hard Mode'
             controller.choosePlayer();
         });
 
@@ -257,6 +275,7 @@ const controller = (() => {
         document.getElementById('chooseImp').addEventListener('click', () => {
             player2Difficulty = 2;
             document.getElementById('modal-window').remove();
+            document.getElementById('difficultyText').innerHTML = 'Impossible Mode'
             controller.choosePlayer();
         });
     }
@@ -299,6 +318,8 @@ const controller = (() => {
             winReached = false;
             drawReached = false;
             victor = '';
+            document.getElementById('playerO').classList.remove('currentTurn');
+            document.getElementById('playerX').classList.remove('currentTurn');
             controller.chooseDifficulty();
 
         })
@@ -341,16 +362,16 @@ const playerAI = (() => {
         
 
         // Switch the player turn
-        if (playerTurn == 'X') {
-            document.getElementById('playerX').classList.remove('currentTurn');
-            document.getElementById('playerO').classList.add('currentTurn');
-        }
-        if (playerTurn == 'O') {
-            document.getElementById('playerO').classList.remove('currentTurn');
-            document.getElementById('playerX').classList.add('currentTurn');
-        }
         playerTurn = playerChoice;
         document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
+        if (playerTurn == 'X') {
+            document.getElementById('playerX').classList.add('currentTurn');
+            document.getElementById('playerO').classList.remove('currentTurn');
+        }
+        if (playerTurn == 'O') {
+            document.getElementById('playerO').classList.add('currentTurn');
+            document.getElementById('playerX').classList.remove('currentTurn');
+        }
 
 
         };
@@ -382,18 +403,17 @@ const playerAI = (() => {
             };
   
             // Switch the player turn
-            if (playerTurn == 'X') {
-                document.getElementById('playerX').classList.remove('currentTurn');
-                document.getElementById('playerO').classList.add('currentTurn');
-            }
-            if (playerTurn == 'O') {
-                document.getElementById('playerO').classList.remove('currentTurn');
-                document.getElementById('playerX').classList.add('currentTurn');
-            }
 
             playerTurn = playerChoice;
             document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
-  
+            if (playerTurn == 'X') {
+                document.getElementById('playerX').classList.add('currentTurn');
+                document.getElementById('playerO').classList.remove('currentTurn');
+            }
+            if (playerTurn == 'O') {
+                document.getElementById('playerO').classList.add('currentTurn');
+                document.getElementById('playerX').classList.remove('currentTurn');
+            }
             return; // Exit the function
           }
   
@@ -435,18 +455,16 @@ const playerAI = (() => {
             };
   
             // Switch the player turn
-            if (playerTurn == 'X') {
-                document.getElementById('playerX').classList.remove('currentTurn');
-                document.getElementById('playerO').classList.add('currentTurn');
-            }
-            if (playerTurn == 'O') {
-                document.getElementById('playerO').classList.remove('currentTurn');
-                document.getElementById('playerX').classList.add('currentTurn');
-            }
-
             playerTurn = playerChoice;
             document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
-
+            if (playerTurn == 'X') {
+                document.getElementById('playerX').classList.add('currentTurn');
+                document.getElementById('playerO').classList.remove('currentTurn');
+            }
+            if (playerTurn == 'O') {
+                document.getElementById('playerO').classList.add('currentTurn');
+                document.getElementById('playerX').classList.remove('currentTurn');
+            }
   
             return; // Exit the function
           }
@@ -487,14 +505,13 @@ const playerAI = (() => {
             // Switch the player turn
             playerTurn = playerChoice;
             document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
-
             if (playerTurn == 'X') {
-                document.getElementById('playerX').classList.remove('currentTurn');
-                document.getElementById('playerO').classList.add('currentTurn');
+                document.getElementById('playerX').classList.add('currentTurn');
+                document.getElementById('playerO').classList.remove('currentTurn');
             }
             if (playerTurn == 'O') {
-                document.getElementById('playerO').classList.remove('currentTurn');
-                document.getElementById('playerX').classList.add('currentTurn');
+                document.getElementById('playerO').classList.add('currentTurn');
+                document.getElementById('playerX').classList.remove('currentTurn');
             }
   
             return; // Exit the function
@@ -529,9 +546,7 @@ const playerAI = (() => {
          };
   
       // Switch the player turn
-      playerTurn = playerChoice;
-      document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
-
+    
       if (playerTurn == 'X') {
         document.getElementById('playerX').classList.remove('currentTurn');
         document.getElementById('playerO').classList.add('currentTurn');
@@ -540,6 +555,10 @@ const playerAI = (() => {
             document.getElementById('playerO').classList.remove('currentTurn');
             document.getElementById('playerX').classList.add('currentTurn');
         }
+
+      playerTurn = playerChoice;
+      document.getElementById('currentPlayer').innerHTML = playerTurn === 'X' ? '<' : '>';
+
     };
 
     const takeTurn = () => {
