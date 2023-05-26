@@ -6,6 +6,7 @@ body {
     text-align: center;
     position: relative;
     font-family: '8BIT WONDER', 'sans serif';
+    background: radial-gradient(#e66465, #9198e5);
 }
 
 p {
@@ -13,19 +14,20 @@ p {
 }
 
 #gameBoard {
-    border: 1px solid black;
     margin: auto;
     aspect-ratio: 1;
     min-width: 250px;
     max-width: 25%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    gap: 0px;
 }
 
 .gameBoardDiv {
     font-family: 'BM rizer', 'sans serif';
     transition: .25s;
-    border: 1px solid black;
+    border: 3px solid black;
+    border-radius: 10px;
     aspect-ratio: 1;
     font-size: calc(15px + 3vw);
     display: flex;
@@ -36,7 +38,7 @@ p {
 .unwritten:hover {
     cursor: pointer;
     transition: .25s;
-    background-color: rgb(179, 179, 179);
+    background-color: #f36078;
 }
 
 #controller {
