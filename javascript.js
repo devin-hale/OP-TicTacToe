@@ -202,12 +202,14 @@ const controller = (() => {
             playerChoice = 'O';
             player2Choice = 'X';
             document.getElementById('modal').remove();
+            playerAI.takeTurn();
         });
 
         document.getElementById('chooseX').addEventListener('click', () => {
             playerChoice = 'X';
             player2Choice = 'O';
             document.getElementById('modal').remove();
+
         });
 
 
@@ -541,17 +543,21 @@ const playerAI = (() => {
     };
 
     const takeTurn = () => {
-        switch (true) {
-            case player2Difficulty === 0:
-                difficulty0();
-                break;
-            case player2Difficulty === 1:
-                difficulty1();
-                break;
-            case player2Difficulty === 2:
-                difficulty2();
-                break;
-        }
+        setTimeout(
+            () => {switch (true) {
+                case player2Difficulty === 0:
+                    difficulty0();
+                    break;
+                case player2Difficulty === 1:
+                    difficulty1();
+                    break;
+                case player2Difficulty === 2:
+                    difficulty2();
+                    break;
+            }},
+            1000
+        )
+
     }
   
     // Function to check if a given move results in a win
